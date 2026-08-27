@@ -4,7 +4,7 @@
 // there is no backend inference call — satisfying the strict offline-first
 // requirement. The world model is fit on demand from the active capture.
 
-import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, type ReactNode } from "react";
 import type { Flow } from "./types.ts";
 import { analyze, type AnalysisResult } from "./analyze.ts";
 import { parseCsv, type SchemaMap } from "./parse.ts";
