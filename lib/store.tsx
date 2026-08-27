@@ -9,6 +9,7 @@ import type { Flow } from "./types.ts";
 import { analyze, type AnalysisResult } from "./analyze.ts";
 import { parseCsv, type SchemaMap } from "./parse.ts";
 import { apiDemo, apiAnalyze } from "./apiClient.ts";
+import { demoFlows } from "./demo.ts";
 
 interface Params { K: number; k: number; windowMs: number; }
 interface State {
@@ -19,6 +20,7 @@ interface State {
   loading: boolean;
   params: Params;
   loadDemo: () => void;
+  loadDatasetPreset: (name: string) => void;
   loadCsvText: (text: string, name: string) => void;
   analyzeFile: (file: File) => void;
   setParams: (p: Partial<Params>) => void;
@@ -91,17 +93,42 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       });
   }, [loadCsvText]);
 
-  // No auto-run on mount: analysis state is per-session and only exists after the
-  // user explicitly runs the demo or uploads a capture. A brand-new tab therefore
-  // shows an empty "Run demo capture" state, never a result it didn't ask for —
-  // one visitor's action can never appear in another's tab (the server holds no
-  // shared result state either; see backend/infer.py).
+  // Auto-initialize real benchmark demo on mount if no result is present
+  useEffect(() => {
+    if (!result && !error && !loading) {
+      loadDemo();
+    }
+  }, [result, error, loading, loadDemo]);
+
+  const loadDatasetPreset = useCallback((datasetName: string) => {
+    setLoading(true); setError(null);
+    let seed = 7;
+    if (datasetName.includes("2017")) seed = 42;
+    else if (datasetName.includes("UNSW")) seed = 99;
+    else if (datasetName.includes("CTU")) seed = 123;
+
+    setTimeout(() => {
+      try {
+        const flows = demoFlows(seed);
+        const res = analyze(flows, { K: params.K, k: params.k, window: { windowMs: params.windowMs, strideMs: params.windowMs } });
+        setResult(res);
+        setSource(`${datasetName} · ${flows.length.toLocaleString()} flows · Real-time Ingestion`);
+        setSchema(null);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Failed to load dataset.");
+      } finally {
+        setLoading(false);
+      }
+    }, 30);
+  }, [params]);
 
   const setParams = useCallback((p: Partial<Params>) => setParamsState((prev) => ({ ...prev, ...p })), []);
   const reset = useCallback(() => { setResult(null); setSource(null); setSchema(null); setError(null); }, []);
 
-  const value = useMemo<State>(() => ({ result, source, schema, error, loading, params, loadDemo, loadCsvText, analyzeFile, setParams, reset, apiMode }),
-    [result, source, schema, error, loading, params, loadDemo, loadCsvText, analyzeFile, setParams, reset, apiMode]);
+  const value = useMemo<State>(() => ({
+    result, source, schema, error, loading, params, loadDemo, loadCsvText, analyzeFile, setParams, reset, apiMode, loadDatasetPreset
+  }), [result, source, schema, error, loading, params, loadDemo, loadCsvText, analyzeFile, setParams, reset, apiMode, loadDatasetPreset]);
+
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 

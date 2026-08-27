@@ -14,13 +14,70 @@ const METRICS: { key: "precision" | "recall" | "f1" | "rocAuc" | "prAuc" | "fpr"
 ];
 
 export default function BenchmarkPage() {
-  const { result } = useStore();
+  const { result, source, loadDatasetPreset } = useStore();
   if (!result) return (<><Topbar title="Benchmark" sub="World model vs conventional classifier" /><NeedData /></>);
   const b = result.benchmark;
+
+  const datasets = [
+    { name: "CSE-CIC-IDS2018", label: "CSE-CIC-IDS2018 (Infiltration Day)" },
+    { name: "CIC-IDS2017", label: "CIC-IDS2017 (DDoS & Web Attacks)" },
+    { name: "UNSW-NB15", label: "UNSW-NB15 (Fuzzers & Exploits)" },
+    { name: "CTU-13", label: "CTU-13 (Botnet C&C Traffic)" },
+  ];
+
+  const currentDataset = datasets.find((d) => source?.includes(d.name))?.name || "CSE-CIC-IDS2018";
 
   return (
     <>
       <Topbar title="Benchmark" sub="Sentinel world model vs logistic-regression IDS baseline · chronological hold-out" />
+
+      {/* Dataset Selector Bar */}
+      <div
+        className="card"
+        style={{
+          marginBottom: 16,
+          padding: "12px 18px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: 12,
+          border: "1px solid var(--brand-accent)",
+          background: "rgba(59, 130, 246, 0.04)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--sans)", color: "var(--text-primary)" }}>
+            📊 EVALUATION DATASET:
+          </span>
+          <span className="badge b-high" style={{ fontFamily: "var(--sans)", fontWeight: 700 }}>
+            {currentDataset}
+          </span>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          {datasets.map((d) => (
+            <button
+              key={d.name}
+              onClick={() => loadDatasetPreset(d.name)}
+              style={{
+                padding: "6px 14px",
+                borderRadius: 6,
+                fontSize: 12,
+                fontWeight: 700,
+                fontFamily: "var(--sans)",
+                cursor: "pointer",
+                border: currentDataset === d.name ? "1.5px solid var(--brand-accent)" : "1px solid var(--border-default)",
+                background: currentDataset === d.name ? "var(--brand-accent)" : "var(--bg-surface)",
+                color: currentDataset === d.name ? "#ffffff" : "var(--text-secondary)",
+                transition: "all 0.2s ease",
+              }}
+            >
+              {d.name}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {!b.hasLabels && (
         <div className="badge b-elev" style={{ marginBottom: 16 }}><span className="dot" />

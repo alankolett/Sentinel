@@ -7,7 +7,7 @@ import { LineChart, Panel, COLORS } from "@/components/charts";
 import { FEATURES } from "@/lib/types";
 
 export default function DatasetPage() {
-  const { result } = useStore();
+  const { result, source, loadDatasetPreset } = useStore();
 
   const stats = useMemo(() => {
     if (!result) return null;
@@ -28,9 +28,66 @@ export default function DatasetPage() {
   if (!result || !stats) return (<><Topbar title="Dataset Explorer" sub="Distributions & temporal structure" /><NeedData /></>);
   const r = result;
 
+  const datasets = [
+    { name: "CSE-CIC-IDS2018", label: "CSE-CIC-IDS2018 (Infiltration Day)" },
+    { name: "CIC-IDS2017", label: "CIC-IDS2017 (DDoS & Web Attacks)" },
+    { name: "UNSW-NB15", label: "UNSW-NB15 (Fuzzers & Exploits)" },
+    { name: "CTU-13", label: "CTU-13 (Botnet C&C Traffic)" },
+  ];
+
+  const currentDataset = datasets.find((d) => source?.includes(d.name))?.name || "CSE-CIC-IDS2018";
+
   return (
     <>
       <Topbar title="Dataset Explorer" sub="Capture statistics, attack distribution & temporal windows" />
+
+      {/* Dataset Selector Bar */}
+      <div
+        className="card"
+        style={{
+          marginBottom: 16,
+          padding: "12px 18px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: 12,
+          border: "1px solid var(--brand-accent)",
+          background: "rgba(59, 130, 246, 0.04)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--sans)", color: "var(--text-primary)" }}>
+            📊 ACTIVE DATASET PRESET:
+          </span>
+          <span className="badge b-high" style={{ fontFamily: "var(--sans)", fontWeight: 700 }}>
+            {currentDataset}
+          </span>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          {datasets.map((d) => (
+            <button
+              key={d.name}
+              onClick={() => loadDatasetPreset(d.name)}
+              style={{
+                padding: "6px 14px",
+                borderRadius: 6,
+                fontSize: 12,
+                fontWeight: 700,
+                fontFamily: "var(--sans)",
+                cursor: "pointer",
+                border: currentDataset === d.name ? "1.5px solid var(--brand-accent)" : "1px solid var(--border-default)",
+                background: currentDataset === d.name ? "var(--brand-accent)" : "var(--bg-surface)",
+                color: currentDataset === d.name ? "#ffffff" : "var(--text-secondary)",
+                transition: "all 0.2s ease",
+              }}
+            >
+              {d.name}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="grid cols-4">
         <Kpi label="Flows" v={r.meta.flows.toLocaleString()} />
