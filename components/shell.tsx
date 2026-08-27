@@ -340,7 +340,7 @@ export function Sidebar() {
           P(Sₜ₊₁|Sₜ) Active Mesh
         </div>
         <div style={{ fontSize: 9.5, color: "var(--text-tertiary)", fontFamily: "var(--mono)" }}>
-          79 Telemetry Features · Online
+          21 Telemetry Features · Online
         </div>
       </div>
 

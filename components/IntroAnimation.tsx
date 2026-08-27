@@ -14,7 +14,7 @@ export function IntroAnimation() {
   const logs = [
     "Loading CIC-IDS2018 World Model Weights...",
     "Initializing P(Sₜ₊₁|Sₜ) Latent Transition Space...",
-    "Calibrating 79 Flow Feature Extraction Pipelines...",
+    "Calibrating 21 Flow Feature Extraction Pipelines...",
     "Mapping MITRE ATT&CK Telemetry Matrix...",
     "Sentinel Cyber Defense Operational.",
   ];
