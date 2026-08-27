@@ -16,13 +16,13 @@ export default function DatasetPage() {
     // per-window malicious ratio timeline & flow counts
     const flowSeries = w.map((x) => x.flowCount);
     const malSeries = w.map((x) => (x.malicious ? 1 : 0));
-    // feature means (benign vs malicious) for the distribution table
+    // feature means (Safe vs Malicious) for the distribution table
     const rows = FEATURES.map((f, j) => {
-      const benign = w.filter((x) => !x.malicious).map((x) => x.vec[j]);
+      const safe = w.filter((x) => !x.malicious).map((x) => x.vec[j]);
       const attack = w.filter((x) => x.malicious).map((x) => x.vec[j]);
-      return { f, benign: mean(benign), attack: mean(attack) };
+      return { f, safe: mean(safe), attack: mean(attack) };
     });
-    return { windows: w.length, mal, benign: w.length - mal, flowSeries, malSeries, rows, maxFlow: Math.max(...flowSeries, 1) };
+    return { windows: w.length, mal, safe: w.length - mal, flowSeries, malSeries, rows, maxFlow: Math.max(...flowSeries, 1) };
   }, [result]);
 
   if (!result || !stats) return (<><Topbar title="Dataset Explorer" sub="Distributions & temporal structure" /><NeedData /></>);
@@ -102,7 +102,7 @@ export default function DatasetPage() {
         </Panel>
         <Panel title="Attack Label Timeline">
           <LineChart height={190} yMax={1} series={[{ label: "malicious", color: COLORS.high, points: stats.malSeries }]} />
-          <div className="legend" style={{ marginTop: 6 }}><span className="faint">1 = window contains labelled attack traffic · 0 = benign</span></div>
+          <div className="legend" style={{ marginTop: 6 }}><span className="faint">1 = window contains labelled attack traffic · 0 = safe</span></div>
         </Panel>
       </div>
 
@@ -128,18 +128,18 @@ export default function DatasetPage() {
         </table>
       </div>
 
-      <div className="section-title">Feature Distribution — Benign vs Malicious</div>
+      <div className="section-title">Feature Distribution — Safe vs Malicious</div>
       <div className="card">
         <table>
-          <thead><tr><th>Feature</th><th>Benign mean</th><th>Malicious mean</th><th>Separation</th></tr></thead>
+          <thead><tr><th>Feature</th><th>Safe mean</th><th>Malicious mean</th><th>Separation</th></tr></thead>
           <tbody>
             {stats.rows.map((row) => {
-              const sep = row.attack - row.benign;
-              const rel = row.benign !== 0 ? sep / Math.abs(row.benign) : sep;
+              const sep = row.attack - row.safe;
+              const rel = row.safe !== 0 ? sep / Math.abs(row.safe) : sep;
               return (
                 <tr key={row.f}>
                   <td className="mono">{row.f}</td>
-                  <td>{fmt(row.benign)}</td>
+                  <td>{fmt(row.safe)}</td>
                   <td style={{ color: COLORS.high }}>{fmt(row.attack)}</td>
                   <td><span className={`badge ${Math.abs(rel) > 0.5 ? "b-high" : Math.abs(rel) > 0.1 ? "b-elev" : "b-low"}`}>{rel >= 0 ? "+" : ""}{(rel * 100).toFixed(0)}%</span></td>
                 </tr>

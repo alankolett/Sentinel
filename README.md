@@ -85,7 +85,7 @@ Trained and evaluated on **CSE-CIC-IDS2018 (Infiltration Dataset Day: Thursday-0
 | **F1 Score @ 5% FPR** | **0.664** | 0.230 | **+188.7% Improvement** |
 | **PR-AUC** | **0.683** | 0.665 | **Higher Precision Floor** |
 | **Forecast Lead Time** | **+20 Seconds** | 0 Seconds | **2 Windows Earlier Alert** |
-| **Robustness Score** | **0.01 Infiltration (All-Benign)** | 0.98 (Unclipped Baseline) | **0% False Alarm Spike** |
+| **Robustness Score** | **0.01 Infiltration (All-safe)** | 0.98 (Unclipped Baseline) | **0% False Alarm Spike** |
 
 ---
 
@@ -93,7 +93,7 @@ Trained and evaluated on **CSE-CIC-IDS2018 (Infiltration Dataset Day: Thursday-0
 
 ### 1. Dual-Head LSTM World Model (`models/world_model.py`)
 - **Next-State Head ($\text{MSE}$):** Predicts $\hat{S}_{t+1}$ to learn system transition dynamics for Monte-Carlo state rollout.
-- **Stage Head ($\text{Softmax}$):** Computes infiltration probability trajectory $1 - P(\text{benign} \mid S_{t..t-w})$.
+- **Stage Head ($\text{Softmax}$):** Computes infiltration probability trajectory $1 - P(\text{safe} \mid S_{t..t-w})$.
 
 ### 2. Gradient $\times$ Input Backprop Attribution (`backend/infer.py`)
 - Exposes true back-propagated LSTM gradients ($\nabla_{S_t} \mathcal{L}$) multiplied by input feature vectors to isolate exact flow parameters (e.g. `SYN-ACK Ratio`, `Init_Win_Byts`, `TTL_Variance`) driving the threat forecast.
@@ -200,13 +200,13 @@ Access the packaged dashboard at `http://localhost:3000` and API at `http://loca
 
 A critical failure mode was identified and addressed during development.
 
-Some features were effectively constant in the training environment. For example, `lateral_score` could have a near-zero standard deviation. A naïve standardization step could then turn an ordinary out-of-distribution benign capture into an extreme standardized value and produce a false high-confidence attack score.
+Some features were effectively constant in the training environment. For example, `lateral_score` could have a near-zero standard deviation. A naïve standardization step could then turn an ordinary out-of-distribution safe capture into an extreme standardized value and produce a false high-confidence attack score.
 
 Sentinel now uses:
 
 - a **robust standard-deviation floor**;
 - **standardized-input clipping** in `models/world_model.py`;
-- diverse-benign augmentation in `pipeline/benign_aug.py`;
+- diverse-safe augmentation in `pipeline/safe_aug.py`;
 - varied internal traffic patterns;
 - varied window sizes; and
 - varied payload characteristics.
@@ -215,7 +215,7 @@ A regression test covers this failure mode.
 
 ### Observed regression result
 
-A 400-flow all-benign capture scores approximately **0.01 infiltration** after the robustness changes, compared with approximately **0.98 previously**. A port-scan capture remains flagged as **Critical**.
+A 400-flow all-safe capture scores approximately **0.01 infiltration** after the robustness changes, compared with approximately **0.98 previously**. A port-scan capture remains flagged as **Critical**.
 
 The goal is not merely to increase attack scores. The goal is to make the model behave sensibly when it encounters traffic outside the narrow statistical distribution of the training day.
 
@@ -302,7 +302,7 @@ The second head predicts an attack-stage distribution from the final hidden stat
 The primary infiltration score is the trained temporal stage head:
 
 ```text
-1 − P(benign | last w windows)
+1 − P(safe | last w windows)
 ```
 
 A transition-reconstruction **novelty channel** is also calculated as an auxiliary unsupervised anomaly signal. It is intentionally not presented as the headline score because it does not outperform the supervised temporal predictor on this benchmark.
@@ -387,7 +387,7 @@ sentinel-sih/
 │   ├── schema adapters
 │   ├── windowing
 │   ├── shared train/evaluation logic
-│   └── benign augmentation
+│   └── safe augmentation
 │
 ├── models/
 │   ├── LSTM world model
@@ -727,7 +727,7 @@ Sentinel's current prototype has important scientific and operational limitation
 
 ### 1. Single attack-type day
 
-The primary benchmark covers one CSE-CIC-IDS2018 attack day and focuses on **benign vs Infiltration** behaviour.
+The primary benchmark covers one CSE-CIC-IDS2018 attack day and focuses on **safe vs Infiltration** behaviour.
 
 ### 2. Limited attack diversity
 
@@ -755,7 +755,7 @@ The current system does not provide a fully calibrated probabilistic uncertainty
 
 The next technical steps are intentionally focused on increasing temporal and environmental generalization:
 
-1. **Multi-day training** across different benign and attack periods.
+1. **Multi-day training** across different safe and attack periods.
 2. **Multi-attack training** across a broader set of intrusion behaviours.
 3. Replace the NumPy prototype encoder with a production-grade **PyTorch LSTM / Transformer** while preserving the same evaluation methodology.
 4. Introduce a **temporal graph neural network** representing hosts, services, and communication edges.
