@@ -21,7 +21,7 @@ export function IntroAnimation() {
 
   const pipelineSteps = [
     { num: "01", title: "Traffic Ingestion", sub: "PCAP / NetFlow" },
-    { num: "02", title: "Feature Extract", sub: "79 Flow Features" },
+    { num: "02", title: "Feature Extract", sub: "21 Flow Features" },
     { num: "03", title: "Temporal State", sub: "Sequential Windows" },
     { num: "04", title: "LSTM Model", sub: "Learned Latent Space" },
     { num: "05", title: "K-Step Rollout", sub: "Forward Forecast" },

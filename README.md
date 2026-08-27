@@ -43,7 +43,7 @@ It consumes an 8-window history of network states ($S_t$), autoregressively roll
  ┌──────────────────┐      ┌──────────────────┐      ┌──────────────────┐      ┌──────────────────┐
  │ 01. TRAFFIC      │  ──► │ 02. FEATURE      │  ──► │ 03. TEMPORAL     │  ──► │ 04. LSTM WORLD   │
  │     INGESTION    │      │     EXTRACTION   │      │     WINDOWING    │      │     MODEL        │
- │ PCAP/NetFlow 10G │      │ 79 Flow Features │      │ 10s Window (S_t) │      │ Latent Space P() │
+ │ PCAP/NetFlow 10G │      │ 21 Behavioural Features │      │ 10s Window (S_t) │      │ Latent Space P() │
  └──────────────────┘      └──────────────────┘      └──────────────────┘      └──────────────────┘
                                                                                         │
  ┌──────────────────┐      ┌──────────────────┐      ┌──────────────────┐               │
@@ -68,7 +68,7 @@ It consumes an 8-window history of network states ($S_t$), autoregressively roll
 | Requirement | Traditional NIDS | **Sentinel Solution** |
 | :--- | :--- | :--- |
 | **Detection Paradigm** | Reactive point classification | **Proactive time-series trajectory forecasting** |
-| **Input Ingestion** | Single static packet/flow | **Continuous PCAP, PCAPNG & 79 NetFlow features** |
+| **Input Ingestion** | Single static packet/flow | **Continuous PCAP, PCAPNG & 21 NetFlow features** |
 | **Temporal Horizon** | Instantaneous ($t=0$) | **Autoregressive $K$-step rollout ($t+20\text{s}$ lead time)** |
 | **Explainability** | Black-box anomaly score | **Signed Gradient $\times$ Input BPTT + MITRE TTP Mapping** |
 | **Response Mechanism** | Manual alert logging | **Automated SOAR Playbook Execution (14ms response)** |

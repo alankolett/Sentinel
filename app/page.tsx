@@ -16,9 +16,9 @@ const PIPELINE_STEPS = [
   {
     step: "02",
     name: "Feature Extract",
-    detail: "79 Flow Features",
+    detail: "21 Flow Features",
     desc: "Calculates 79 continuous statistical flow features including packet inter-arrival times, payload entropy, and TCP window scaling.",
-    metrics: "79 active flow vectors computed",
+    metrics: "21 active flow vectors computed",
     tech: "NumPy · FlowParser Engine",
   },
   {
