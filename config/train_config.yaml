@@ -1,0 +1,37 @@
+# Reproducible training configuration. `python train.py` reads this file; a fixed
+# seed makes weights bit-for-bit reproducible on the same NumPy/BLAS build.
+
+seed: 42
+
+data:
+  # REAL dataset: CSE-CIC-IDS2018, Thursday-01-03-2018 (the Infiltration attack
+  # day), CICFlowMeter processed flow CSV. 331k labelled flows, 28% Infiltration.
+  # Download with scripts/download_dataset.sh (see README). The schema adapter in
+  # pipeline/extract_features.py auto-detects the CICFlowMeter columns.
+  source: csv
+  path: data/raw/cicids2018_thu01mar.csv
+  synthetic_seed: 7      # only used if source: synthetic
+  # Optional diverse-benign augmentation added to TRAIN only (pipeline/benign_aug.py).
+  # Left at 0: the robust standardization (std floor + input clipping) in
+  # models/world_model.py already removes the out-of-distribution false-positive on
+  # ordinary benign traffic, and does so without the small AUC cost augmentation
+  # incurs. Set >0 to broaden the benign manifold further if deploying on a very
+  # different network than CIC-IDS2018.
+  benign_aug_windows: 900
+
+windowing:
+  window_ms: 10000       # 10-second network-state windows
+  stride_ms: 10000
+  sequence_length: 8     # w: number of past windows fed to the LSTM
+
+model:
+  hidden_dim: 48
+  epochs: 90
+  lr: 0.005
+  lambda_stage: 1.2      # weight of the attack-stage CE loss vs next-state MSE
+  batch: 128
+
+split:
+  method: chronological  # train on earlier time, test on later time (no leakage)
+  test_fraction: 0.35
+  holdout_stage: null    # single-attack-type day; no stage held out

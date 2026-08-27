@@ -1,0 +1,10 @@
+# Slim runtime deps for the Vercel Python function (inference only — no sklearn/
+# scipy: the baseline is served from models/baseline_np.json in pure NumPy).
+numpy==2.5.2
+pandas==3.0.5
+fastapi==0.141.1
+python-multipart==0.0.32
+PyYAML==6.0.3
+# PCAP ingestion: classic .pcap is parsed dependency-free (backend/runner.py);
+# scapy (pure-Python) is the fallback for .pcapng / exotic link types.
+scapy==2.6.1

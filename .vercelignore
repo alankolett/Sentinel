@@ -1,0 +1,17 @@
+# Keep the deploy lean but include the Python inference stack (api/, backend/,
+# pipeline/, models/, config/) so the same-origin /api function runs the real
+# model. Only heavy/dev-only artifacts are excluded.
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+data/raw
+tests
+docs
+docker-compose.yml
+Dockerfile.frontend
+backend/Dockerfile
+run.sh
+train.py
+benchmark.py
+scripts

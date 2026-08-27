@@ -1,0 +1,59 @@
+{
+  "config": {
+    "seed": 42,
+    "data": {
+      "source": "csv",
+      "path": "data/raw/cicids2018_thu01mar.csv",
+      "synthetic_seed": 7,
+      "benign_aug_windows": 900
+    },
+    "windowing": {
+      "window_ms": 10000,
+      "stride_ms": 10000,
+      "sequence_length": 8
+    },
+    "model": {
+      "hidden_dim": 48,
+      "epochs": 90,
+      "lr": 0.005,
+      "lambda_stage": 1.2,
+      "batch": 128
+    },
+    "split": {
+      "method": "chronological",
+      "test_fraction": 0.35,
+      "holdout_stage": null
+    }
+  },
+  "stage_names": [
+    "benign",
+    "reconnaissance",
+    "initial_access",
+    "lateral_movement",
+    "command_and_control",
+    "exfiltration"
+  ],
+  "features": [
+    "flow_count",
+    "uniq_dst_ports",
+    "uniq_dst_ips",
+    "syn_ratio",
+    "syn_ack_ratio",
+    "rst_ratio",
+    "fin_ratio",
+    "avg_bytes",
+    "avg_pkts",
+    "avg_dur",
+    "iat_mean",
+    "iat_var",
+    "port_scan_score",
+    "failed_conn_ratio",
+    "lateral_score",
+    "bytes_out_ratio",
+    "ttl_var",
+    "retrans_ratio",
+    "win_mean",
+    "frag_ratio",
+    "payload_var"
+  ]
+}

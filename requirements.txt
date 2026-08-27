@@ -1,0 +1,14 @@
+# Pinned for reproducibility. No wildcard ranges. `pip-audit` is run in CI.
+numpy==2.5.2
+pandas==3.0.5
+scikit-learn==1.9.0
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+python-multipart==0.0.32
+PyYAML==6.0.3
+# dev / test
+pytest==9.1.1
+pip-audit==2.10.1
+# PCAP ingestion: classic .pcap parsed dependency-free (backend/runner.py);
+# scapy is the fallback for .pcapng / exotic link types.
+scapy==2.6.1

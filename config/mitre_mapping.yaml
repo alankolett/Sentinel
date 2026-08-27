@@ -1,0 +1,65 @@
+# MITRE ATT&CK stage mapping — inspectable and defensible, not hardcoded in Python.
+# Raw dataset labels (matched case-insensitively as substrings) are mapped to the
+# kill-chain stages Sentinel forecasts. `order` defines the canonical index used
+# by the model's stage head (0 = benign is the reference class for infiltration).
+
+stages:
+  - name: benign
+    order: 0
+    technique: "—"
+  - name: reconnaissance
+    order: 1
+    technique: "T1595 Active Scanning / T1046 Network Service Discovery"
+  - name: initial_access
+    order: 2
+    technique: "T1190 Exploit Public-Facing App / T1110 Brute Force"
+  - name: lateral_movement
+    order: 3
+    technique: "T1021 Remote Services"
+  - name: command_and_control
+    order: 4
+    technique: "T1071 Application Layer Protocol"
+  - name: exfiltration
+    order: 5
+    technique: "T1041 Exfiltration Over C2 Channel"
+
+# label substring -> stage name. First match wins (longest patterns first).
+label_map:
+  benign: benign
+  normal: benign
+  background: benign
+  reconnaissance: reconnaissance
+  recon: reconnaissance
+  portscan: reconnaissance
+  port scan: reconnaissance
+  scanning: reconnaissance
+  analysis: reconnaissance
+  fuzzers: reconnaissance
+  probe: reconnaissance
+  bruteforce: initial_access
+  brute force: initial_access
+  "brute-force": initial_access
+  patator: initial_access
+  ftp-patator: initial_access
+  ssh-patator: initial_access
+  web attack: initial_access
+  webattack: initial_access
+  sql injection: initial_access
+  xss: initial_access
+  backdoor: initial_access
+  exploits: initial_access
+  shellcode: initial_access
+  initial: initial_access
+  lateral: lateral_movement
+  infilteration: lateral_movement   # CIC-IDS2018 spelling
+  infiltration: lateral_movement
+  worm: lateral_movement
+  botnet: command_and_control
+  bot: command_and_control
+  c&c: command_and_control
+  command: command_and_control
+  ddos: command_and_control
+  dos: command_and_control
+  exfil: exfiltration
+  exfiltration: exfiltration
+  generic: exfiltration

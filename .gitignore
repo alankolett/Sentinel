@@ -1,0 +1,21 @@
+/node_modules
+/.next
+/out
+/build
+*.tsbuildinfo
+next-env.d.ts.timestamp
+.env*
+!.env.example
+.vercel
+.DS_Store
+npm-debug.log*
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/*.flows.csv
+
+# large raw datasets (downloaded via scripts/download_dataset.sh, not committed)
+data/raw/
